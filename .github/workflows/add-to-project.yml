@@ -9,11 +9,10 @@ jobs:
     name: Add issue to project
     runs-on: ubuntu-latest
     steps:
-      - uses: peter-evans/add-to-project@v2.5.0
+      - uses: actions/add-to-project@RELEASE_VERSION
         with:
           # You can target a repository in a different organization
           # to the issue
           project-url: https://github.com/orgs/Hildirial/projects/2
           github-token: ${{ secrets.MY_GITHUB_TOKEN }}
-          labeled: bug, needs-triage
-          label-operator: OR
+          labeled: bug
