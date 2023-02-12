@@ -2,7 +2,7 @@ name: Add bugs to bugs project
 
 on:
   issues:
-    types: [labeleled]
+    types: [labeled]
 
 jobs:
   add-to-project:
