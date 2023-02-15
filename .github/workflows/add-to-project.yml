@@ -14,5 +14,5 @@ jobs:
           # You can target a repository in a different organization
           # to the issue
           project-url: https://github.com/users/Hildirial/projects/2
-          github-token: ${{ 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 }}
+          github-token: ${{ secrets.MY_GYTHUB_TOKEN }}
           labeled: bug
