@@ -11,8 +11,29 @@ jobs:
     steps:
       - uses: actions/add-to-project@v0.4.0
         with:
-          # You can target a repository in a different organization
-          # to the issue
           project-url: https://github.com/users/Hildirial/projects/2
-          github-token: ${{ secrets.MY_GYTHUB_TOKEN }}
+          github-token: ${{ steps.install.outputs.access_token }}
           labeled: bug
+      - name: Install app
+        uses: peter-evans/install-pkg@v1
+        with:
+          package: octokit
+      - name: Create JWT
+        id: jwt
+        run: |
+          echo "${{ secrets.PRIVATE_KEY }}" | base64 -d > private-key.pem
+          JWT=$(./jwt.py encode --private-key private-key.pem --app-id ${{ secrets.APP_ID }})
+          echo "::set-output name=jwt::${JWT}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Get installation token
+        id: install
+        uses: octokit/request-action@v2.x
+        with:
+          route: POST /app/installations/:installation_id/access_tokens
+          installation_id: ${{ github.event.installation.id }}
+          headers: |
+            authorization: Bearer ${{ steps.jwt.outputs.jwt }}
+          accept: application/vnd.github.machine-man-preview+json
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
