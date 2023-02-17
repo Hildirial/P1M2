@@ -9,35 +9,23 @@ jobs:
     name: Add issue to project
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/add-to-project@v0.4.0
+      - uses: actions/checkout@v2
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - name: Install dependencies
+        run: npm install
+      - name: Use GitHub App to create a new access token
+        id: github_app_token
+        uses: wei/gitHub-app-token@v1.0.4
+        with:
+          appId: ${{ secrets.APP_ID }}
+          privateKey: ${{ secrets.PRIVATE_KEY }}
+          installationId: ${{ github.event.installation.id }}
+      - name: Add issue to project
+        uses: actions/add-to-project@v0.4.0
         with:
           project-url: https://github.com/users/Hildirial/projects/2
-          github-token: ${{ steps.install.outputs.access_token }}
-          labeled: 'bug'
-      - name: Install Octokit
-        uses: peter-evans/install-pkg@b5c5b5f5b23d3ec5d5c5f6f00e6a1742623a3503
-        with:
-          package: '@octokit/rest'
-      - name: Install dotenv
-        run: npm install dotenv
-      - name: Configure environment
-        run: echo "PRIVATE_KEY=$(cat private-key.pem)" >> $GITHUB_ENV
-      - name: Create JWT
-        id: jwt
-        run: |
-          echo "${{ secrets.PRIVATE_KEY }}" | base64 -d > private-key.pem
-          JWT=$(./jwt.py encode --private-key private-key.pem --app-id ${{ secrets.APP_ID }})
-          echo "::set-output name=jwt::${JWT}"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Get installation token
-        id: install
-        uses: octokit/request-action@v2.x
-        with:
-          route: POST /app/installations/:installation_id/access_tokens
-          installation_id: ${{ github.event.installation.id }}
-          headers: |
-            authorization: Bearer ${{ steps.jwt.outputs.jwt }}
-          accept: application/vnd.github.machine-man-preview+json
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ steps.github_app_token.outputs.accessToken }}
+          labeled: bug
