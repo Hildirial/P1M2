@@ -13,12 +13,15 @@ jobs:
         with:
           project-url: https://github.com/users/Hildirial/projects/2
           github-token: ${{ steps.install.outputs.access_token }}
-          labeled: bug
+          labeled: 'bug'
       - name: Install Octokit
         uses: peter-evans/install-pkg@b5c5b5f5b23d3ec5d5c5f6f00e6a1742623a3503
         with:
           package: @octokit/rest
-
+      - name: Install dotenv
+        run: npm install dotenv
+      - name: Configure environment
+        run: echo "PRIVATE_KEY=$(cat private-key.pem)" >> $GITHUB_ENV
       - name: Create JWT
         id: jwt
         run: |
