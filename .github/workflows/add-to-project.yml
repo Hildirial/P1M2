@@ -17,7 +17,7 @@ jobs:
       - name: Install Octokit
         uses: peter-evans/install-pkg@b5c5b5f5b23d3ec5d5c5f6f00e6a1742623a3503
         with:
-          package: @octokit/rest
+          package: '@octokit/rest'
       - name: Install dotenv
         run: npm install dotenv
       - name: Configure environment
